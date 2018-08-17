@@ -1,23 +1,19 @@
 defmodule Identicon do
   @moduledoc """
-  Documentation for Identicon.
+    Generate Identicon just like the ones from Github in png file
   """
 
   @doc """
-  Identicon
-
-  ## Examples
-    iex> Identicon.main("banana")
+    Main function
+  Steps using Pipe Operator
+  -> Take String
+  -> Compute MD5 hash of string
+  ->List of numbers based on the String
+  ->Pick Color
+  ->Build grid of squares
+  ->Convert grid into image
+  ->Save Image
   """
-  # Main function
-  # Steps using Pipe Operator
-  # -> Take String
-  # -> Compute MD5 hash of string
-  # ->List of numbers based on the String
-  # ->Pick Color
-  # ->Build grid of squares
-  # ->Convert grid into image
-  # ->Save Image
   def main(input) do
     # Take input as an argument of hash_input function
     input
@@ -29,11 +25,16 @@ defmodule Identicon do
     |> draw_image
     |> save_image(input)
   end
-
+  @doc """
+    Saves the generated image in png format
+  """
   def save_image(image, input) do
     File.write("#{input}.png", image)
   end
 
+  @doc """
+    Draw image given by the RGB color and pixel_map, using :egd
+  """
   def draw_image(%Identicon.Image{color: color, pixel_map: pixel_map}) do
     image = :egd.create(250, 250)
     fill = :egd.color(color)
@@ -45,6 +46,9 @@ defmodule Identicon do
     :egd.render(image)
   end
 
+  @doc """
+    Builds pixel_map
+  """
   def build_pixel_map(%Identicon.Image{grid: grid} = image) do
     pixel_map =
       Enum.map(grid, fn {_head, index} ->
@@ -59,6 +63,9 @@ defmodule Identicon do
     %Identicon.Image{image | pixel_map: pixel_map}
   end
 
+  @doc """
+    Filter out squares in odd code
+  """
   def filter_odd_squares(%Identicon.Image{grid: grid} = image) do
     grid =  Enum.filter grid, fn{code, _index} ->
       rem(code, 2) == 0
@@ -67,7 +74,9 @@ defmodule Identicon do
     %Identicon.Image{image | grid: grid}
   end
 
-  # Build 5x5 grid
+  @doc """
+    Builds 5 x 5 grid, each segment made as {code, index}
+  """
   def build_grid(%Identicon.Image{hex: hex} = image) do
     # $ : passing function, /1 : arity of one, takes one argument
     # List of list --(Flatten)--> one list
@@ -81,6 +90,13 @@ defmodule Identicon do
     %Identicon.Image{image | grid: grid}
   end
 
+  @doc """
+    Mirrors a row
+    ## Examples
+  iex> mirror = Identicon.mirror_row([143, 23, 100])
+  iex> mirror
+  iex> [143, 23, 100, 23, 143]
+  """
   def mirror_row(row) do
     # [143, 23, 100]
     [first, second | _tail] = row
@@ -88,7 +104,11 @@ defmodule Identicon do
     row ++ [second, first]
   end
 
-  # "Image is a struct that has a list"
+
+    @doc """
+     Picks color from the first three elements
+     "Image is a struct that has a list"
+    """
   # |_tail: I know there exists more elements, but I don't care about it
   def pick_color(%Identicon.Image{hex: [r, g, b | _tail]} = image) do
     # First three elements -> R,G,B
@@ -96,6 +116,9 @@ defmodule Identicon do
     %Identicon.Image{image | color: {r, g, b}}
   end
 
+  @doc """
+   hashes input value into a list of binary
+  """
   def hash_input(input) do
     hex =
       :crypto.hash(:md5, input)
