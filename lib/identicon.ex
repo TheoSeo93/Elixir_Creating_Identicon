@@ -5,6 +5,14 @@ defmodule Identicon do
 
   @doc """
     Main function
+  Steps using Pipe Operator
+  -> Take String
+  -> Compute MD5 hash of string
+  ->List of numbers based on the String
+  ->Pick Color
+  ->Build grid of squares
+  ->Convert grid into image
+  ->Save Image
   """
   def main(input) do
     # Take input as an argument of hash_input function
@@ -101,8 +109,8 @@ defmodule Identicon do
      Picks color from the first three elements
      "Image is a struct that has a list"
     """
-  # |_tail: I know there exists more elements, but I don't care about it
   def pick_color(%Identicon.Image{hex: [r, g, b | _tail]} = image) do
+    # |_tail: I know there exists more elements, but I don't care about it
     # First three elements -> R,G,B
     # Take all the properties from image and throw on top a tuple of R, G and B
     %Identicon.Image{image | color: {r, g, b}}
