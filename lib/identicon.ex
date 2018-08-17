@@ -5,14 +5,6 @@ defmodule Identicon do
 
   @doc """
     Main function
-  Steps using Pipe Operator
-  -> Take String
-  -> Compute MD5 hash of string
-  ->List of numbers based on the String
-  ->Pick Color
-  ->Build grid of squares
-  ->Convert grid into image
-  ->Save Image
   """
   def main(input) do
     # Take input as an argument of hash_input function
